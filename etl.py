@@ -37,7 +37,7 @@ def process_song_data(spark, input_data, output_data, mode="overwrite"):
     # write songs table to parquet files partitioned by year and artist
     songs_table.write \
         .mode(mode) \
-        .partitionBy('year', 'artist_id')
+        .partitionBy('year', 'artist_id') \
         .parquet(output_data + '/star_schema/song_table')
 
    # extract columns to create artists table
