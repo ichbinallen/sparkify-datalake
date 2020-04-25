@@ -21,9 +21,9 @@ def create_spark_session():
     return spark
 
 
-def process_song_data(spark, input_data, output_data):
+def process_song_data(spark, input_data, output_data, mode="overwrite"):
    # get filepath to song data file
-    song_data = input_data + "/data/song_data/*/*/*/*.json"
+    song_data = input_data + "/song_data/*/*/*/*.json"
     
     # read song data file
     df = spark.read.json(song_data)
@@ -36,8 +36,9 @@ def process_song_data(spark, input_data, output_data):
    
     # write songs table to parquet files partitioned by year and artist
     songs_table.write \
-        .mode('append') \
-        .parquet(output_data + '/data/star_schema/song_table')
+        .mode(mode) \
+        .partitionBy('year', 'artist_id')
+        .parquet(output_data + '/star_schema/song_table')
 
    # extract columns to create artists table
     artist_fields = [
@@ -66,8 +67,11 @@ def process_song_data(spark, input_data, output_data):
    
     # write artists table to parquet files
     artists_table.write \
-        .mode('append') \
-        .parquet(output_data + '/data/star_schema/artist_table')
+        .mode(mode) \
+        .partitionBy('artist_id') \
+        .parquet(output_data + '/star_schema/artist_table')
+    
+
 
 
 def process_log_data(spark, input_data, output_data):
