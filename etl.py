@@ -76,42 +76,58 @@ def process_song_data(spark, input_data, output_data, mode="overwrite"):
 
 def process_log_data(spark, input_data, output_data):
     # get filepath to log data file
-    log_data =
-
+    log_data = input_data + "/log_data/*.json"
     # read log data file
-    df = 
+    df = spark.read.json(log_data)
     
     # filter by actions for song plays
-    df = 
+    df = df.filter(F.col('page')=='NextSong')
+    df = df.withColumn(
+        'registration', 
+        (F.round(col('registration')/1000)).cast(TimestampType())
+    )
+    df = df.withColumn(
+        'ts', 
+        (F.round(col('ts')/1000)).cast(TimestampType())
+    )
+    
 
     # extract columns for users table    
-    artists_table = 
+    artists_table = df.selectExpr(
+        'userId AS user_id',
+        'firstName AS first_name',
+        'lastName AS last_name',
+        'gender AS gender') \
+        .dropDuplicates(['user_id'])
     
-    # write users table to parquet files
-    artists_table
-
-    # create timestamp column from original timestamp column
-    get_timestamp = udf()
-    df = 
+    return(artists_table)
     
-    # create datetime column from original timestamp column
-    get_datetime = udf()
-    df = 
-    
-    # extract columns to create time table
-    time_table = 
-    
-    # write time table to parquet files partitioned by year and month
-    time_table
 
-    # read in song data to use for songplays table
-    song_df = 
+    # # write users table to parquet files
+    # artists_table
 
-    # extract columns from joined song and log datasets to create songplays table 
-    songplays_table = 
+    # # create timestamp column from original timestamp column
+    # get_timestamp = udf()
+    # df = 
+  
+    # # create datetime column from original timestamp column
+    # get_datetime = udf()
+    # df = 
+   
+    # # extract columns to create time table
+    # time_table = 
+  
+    # # write time table to parquet files partitioned by year and month
+    # time_table
 
-    # write songplays table to parquet files partitioned by year and month
-    songplays_table
+    # # read in song data to use for songplays table
+    # song_df = 
+
+    # # extract columns from joined song and log datasets to create songplays table 
+    # songplays_table = 
+
+    # # write songplays table to parquet files partitioned by year and month
+    # songplays_table
 
 
 def main():
