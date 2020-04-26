@@ -17,6 +17,7 @@ os.environ['AWS_SECRET_ACCESS_KEY'] = config['AWS']['AWS_SECRET_ACCESS_KEY']
 
 
 def create_spark_session():
+    """ Creates and returns the SparkSession object """
     spark = SparkSession \
         .builder \
         .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
@@ -25,6 +26,16 @@ def create_spark_session():
 
 
 def process_song_data(spark, input_data, output_data, mode="overwrite"):
+    """ Transfers song data from OLTP format to star schema format.
+
+    This function transfers the songs and artists tables.
+
+    Keyword arguments:
+    spark -- SparkSession object
+    input_data -- file address for OLTP logs on Udacity S3 bucket
+    output_data -- file address for Star Schema location on personal S3 bucket
+    mode -- overwrite or append option passed to write.parquet
+    """
     # get filepath to song data file
     song_data = input_data + "song_data/*/*/*/*.json"
 
@@ -76,6 +87,16 @@ def process_song_data(spark, input_data, output_data, mode="overwrite"):
 
 
 def process_log_data(spark, input_data, output_data, mode="overwrite"):
+    """ Transfers event log data from OLTP format to star schema format.
+
+    This function transfers the users, time, and songplay tables.
+
+    Keyword arguments:
+    spark -- SparkSession object
+    input_data -- file address for OLTP logs on Udacity S3 bucket
+    output_data -- file address for Star Schema location on personal S3 bucket
+    mode -- overwrite or append option passed to write.parquet
+    """
     # get filepath to log data file
     log_data = input_data + "log_data/*.json"
     # read log data file
@@ -161,6 +182,7 @@ def process_log_data(spark, input_data, output_data, mode="overwrite"):
 
 
 def main():
+    """ Main method moves data from json files to datalake. """
     spark = create_spark_session()
     input_data = "s3a://udacity-dend/"
     output_data = "./data"
