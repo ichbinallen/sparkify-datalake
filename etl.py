@@ -50,7 +50,7 @@ def process_song_data(spark, input_data, output_data, mode="overwrite"):
     songs_table = songs_table.withColumn('duration', F.col('duration').cast(DoubleType()))
 
     # write songs table to parquet files partitioned by year and artist
-    song_path = output_data + 'star_schema/song_table'
+    song_path = output_data + 'star_schema/song_table/'
     print("Writing Song Table to {}".format(song_path))
     songs_table.write \
         .mode(mode) \
@@ -198,12 +198,16 @@ def process_log_data(spark, input_data, output_data, mode="overwrite"):
 def main():
     """ Main method moves data from json files to datalake. """
     spark = create_spark_session()
-    # input_data = "s3a://udacity-dend/"
-    input_data = "./data/"
-    output_data = "./data/"
+
+    # Used for local testing - commented out
+    # input_data = "./data/"
+    # output_data = "./data/"
+    input_data = "s3a://udacity-dend/"
+    output_data = "s3a://allen-lesson4-datalake-bucket/"
 
     process_song_data(spark, input_data, output_data)
     process_log_data(spark, input_data, output_data)
+    spark.stop()
 
 
 if __name__ == "__main__":
