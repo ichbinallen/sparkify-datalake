@@ -52,7 +52,7 @@ def process_song_data(spark, input_data, output_data, mode="overwrite"):
     songs_table.write \
         .mode(mode) \
         .partitionBy('year', 'artist_id') \
-        .parquet(output_data + '/star_schema/song_table')
+        .parquet(output_data + 'star_schema/song_table')
 
     # extract columns to create artists table
     artist_fields = [
@@ -83,7 +83,7 @@ def process_song_data(spark, input_data, output_data, mode="overwrite"):
     artists_table.write \
         .mode(mode) \
         .partitionBy('artist_id') \
-        .parquet(output_data + '/star_schema/artist_table')
+        .parquet(output_data + 'star_schema/artist_table')
 
 
 def process_log_data(spark, input_data, output_data, mode="overwrite"):
@@ -128,7 +128,7 @@ def process_log_data(spark, input_data, output_data, mode="overwrite"):
     users_table.write \
         .mode(mode) \
         .partitionBy('user_id') \
-        .parquet(output_data + '/star_schema/user_table')
+        .parquet(output_data + 'star_schema/user_table')
 
     # extract columns to create time table
     time_table = df.selectExpr('ts AS start_time') \
@@ -145,10 +145,10 @@ def process_log_data(spark, input_data, output_data, mode="overwrite"):
     time_table.write \
         .mode(mode) \
         .partitionBy('year', 'month', 'day') \
-        .parquet(output_data + '/star_schema/time_table')
+        .parquet(output_data + 'star_schema/time_table')
 
     # read in song data to use for songplays table)
-    song_table = spark.read.parquet(output_data + '/star_schema/song_table')
+    song_table = spark.read.parquet(output_data + 'star_schema/song_table')
 
     # extract columns from joined song and log datasets to create songplays table
     songplays_table = df.selectExpr(
@@ -178,14 +178,15 @@ def process_log_data(spark, input_data, output_data, mode="overwrite"):
     songplays_table.write \
         .mode(mode) \
         .partitionBy('year', 'month') \
-        .parquet(output_data + '/star_schema/songplay_table')
+        .parquet(output_data + 'star_schema/songplay_table')
 
 
 def main():
     """ Main method moves data from json files to datalake. """
     spark = create_spark_session()
-    input_data = "s3a://udacity-dend/"
-    output_data = "./data"
+    # input_data = "s3a://udacity-dend/"
+    input_data = "./data/"
+    output_data = "./data/"
 
     process_song_data(spark, input_data, output_data)
     process_log_data(spark, input_data, output_data)
